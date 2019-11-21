@@ -15,6 +15,19 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+    header{
+        display: flex;
+        justify-content: space-around;
+        align-content: center;
+        padding: 10px;
 
+        h1{
+            font-size: 14px;
+            margin: 0 0 10px 0;
+        }
+        p{
+            margin: 0;
+        }
+    }
 </style>
