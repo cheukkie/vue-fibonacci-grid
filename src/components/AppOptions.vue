@@ -1,6 +1,6 @@
 <template>
     <div>
-        <strong>< Make options component ></strong>
+        
     </div>
 </template>
 

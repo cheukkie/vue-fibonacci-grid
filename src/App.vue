@@ -4,13 +4,14 @@
     <header>
         <h1>Fibonacci Grid (?)</h1>
         <p>Fibonacci's found: {{fiboCounter}}</p>
-        <button id="toggle-options">
-            <span class="show">Show options</span>
-            <span class="hide">Hide options</span>
+        <button @click="grid.showOptions = !grid.showOptions">
+          <span v-if="!grid.showOptions">Show</span> 
+          <span v-else>Hide</span>
+          options
         </button>
     </header>
     <AppOptions />
-    <div id="options">
+    <div v-if="grid.showOptions" id="options">
       <div>
         <button @click="clearGrid">Clear grid</button>
       </div>
@@ -35,7 +36,7 @@
       <div>
         <div id="sequence-size">
           <label>Sequence size: ( {{ sequenceSize }} )</label>
-          <input v-model="sequenceSize" type="range" steps="1" value="5" min="5" max="25">
+          <input v-model.number="sequenceSize" type="range" steps="1" value="5" min="5" :max="maxSequenceSize">
         </div>
         <button @click="addRandomFibo(sequenceSize)">Add {{sequenceSize}} random Fibo</button>
       </div>
@@ -43,19 +44,17 @@
         <div>
           <div id="row-counter">
             <label>Rows: ({{ grid.rows }})</label>
-            <input v-model.number="grid.rows" type="range" steps="1" value="50" min="10" max="50">
+            <input v-model.number="grid.rows" @change="handleRowChange" type="range" steps="1" value="50" min="10" max="50">
           </div>
           <div id="col-counter">
             <label>Columns ({{ grid.columns }})</label>
-            <input v-model.number="grid.columns" type="range" steps="1" value="50" min="10" max="50">
+            <input v-model.number="grid.columns" @change="handleColChange" type="range" steps="1" value="50" min="10" max="50">
           </div>
-          <button @click="setupGrid">Make grid</button>
         </div>
       </div>
     </div>
     <br>
 
-    <br>
     <FibonacciTable>
       <tr v-for="(row,rowIndex) in grid.content" :key="rowIndex">
         <td @click="addOne(rowIndex,colIndex)" @mouseenter="highlightRowCol(rowIndex,colIndex)"
@@ -93,6 +92,7 @@
         },
         sequenceSize: 5,
         grid: {
+          showOptions: true,
           rows: 25,
           columns: 25,
           content: []
@@ -101,7 +101,6 @@
     },
     mounted: function () {
       this.setupGrid();
-      this.addRandomFibo(30);
     },
     methods: {
       setupGrid() {
@@ -123,6 +122,48 @@
       },
       clearGrid() {
         this.allCells.forEach(cell => this.resetCell(cell));
+      },
+      handleRowChange(){
+        let diff = this.grid.content.length - this.grid.rows;
+        if(diff > 0){
+          // remove rows
+          this.grid.content.splice(diff*-1, diff);
+        }else{
+          //add rows
+          diff = Math.abs(diff);
+          [...Array(diff).keys()].map(() => {
+            const row = [];
+            for (let i = 0; i < this.grid.columns; i++) {
+              row.push({
+                highlight: false,
+                number: 0,
+                fibo: false,
+              });
+            }
+            this.grid.content.push({columns: row});
+          });
+        }
+      },
+      handleColChange(){
+        let diff = this.grid.content[0].columns.length - this.grid.columns;
+        if(diff > 0){
+          // remove cols
+          this.grid.content.forEach(row=>{
+            row.columns.splice(diff*-1, diff);
+          });
+        }else{
+          // add cols
+          diff = Math.abs(diff);
+          for (let i = 0; i < diff; i++) {
+            this.grid.content.forEach(row=>{
+              row.columns.push({
+                highlight: false,
+                number: 0,
+                fibo: false,
+              })
+            });
+          }
+        }
       },
       resetCell(cell) {
         cell.highlight = false;
@@ -171,7 +212,6 @@
       addRandomFibo(iterations = 1) {
         let fiboSeq = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811
         ];
-
         [...Array(iterations).keys()].map(() => {
           // get random position in grid
           const rowSize = this.grid.rows;
@@ -181,18 +221,20 @@
             fiboSeq = fiboSeq.reverse();
           }
 
-          const rowPosition = getRandomInt(0, (rowSize));
-          const columnPos = getRandomInt(0, (colSize) - (this.sequenceSize - 1));
+          const rowPos = getRandomInt(0, (rowSize));
+          const colPos = getRandomInt(0, (colSize) - (this.sequenceSize - 1));
           const startFibo = getRandomInt(0, (fiboSeq.length - 1) - (this.sequenceSize));
           const flipCoin = getRandomInt(0, 2);
+
+          console.log(startFibo);
           [...Array(this.sequenceSize).keys()].map((n) => {
             if (flipCoin === 0) {
               // row
-              const randomCell = this.allRows[rowPosition][columnPos + n];
+              const randomCell = this.allRows[rowPos][colPos + n];
               randomCell.number = fiboSeq[startFibo + n];
             } else {
               // column
-              const randomCell = this.allCols[rowPosition][columnPos + n];
+              const randomCell = this.allCols[rowPos][colPos + n];
               randomCell.number = fiboSeq[startFibo + n];
             }
           });
@@ -305,7 +347,14 @@
           allColumns.push(column);
         }
         return allColumns;
-      }
+      },
+      maxSequenceSize:function(){
+        if( this.grid.rows < this.grid.columns ){
+          return this.grid.rows;
+        }else{
+          return this.grid.columns;
+        }
+      },
     },
     components: {
       AppHeader,
