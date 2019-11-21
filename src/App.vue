@@ -38,7 +38,7 @@
           <label>Sequence size: ( {{ sequenceSize }} )</label>
           <input v-model.number="sequenceSize" type="range" steps="1" value="5" min="5" :max="maxSequenceSize">
         </div>
-        <button @click="addRandomFibo(sequenceSize)">Add {{sequenceSize}} random Fibo</button>
+        <button @click="addRandomFibo(sequenceSize)">Add random Fibo</button>
       </div>
       <div>
         <div>
@@ -57,11 +57,16 @@
 
     <FibonacciTable>
       <tr v-for="(row,rowIndex) in grid.content" :key="rowIndex">
-        <td @click="addOne(rowIndex,colIndex)" @mouseenter="highlightRowCol(rowIndex,colIndex)"
-          @mouseleave="resetHightRowCol" v-for="(column,colIndex) in row.columns"
-          :class="{'is-fibo': column.fibo, 'is-clicked' : column.highlight, 'is-empty': column.number === 0 }" :data-row="rowIndex"
-          :data-column="colIndex" :key="colIndex">
-          <span v-if="column.number !== 0">{{column.number}}</span>
+        <td 
+          v-for="(cell,colIndex) in row.columns"
+          @click="addOne(cell,rowIndex,colIndex)"
+          @mouseenter="highlightRowCol(rowIndex,colIndex)"
+          @mouseleave="resetHightRowCol"
+          :class="{'is-fibo': cell.fibo, 'is-clicked' : cell.highlight, 'is-empty': cell.number === 0 }"
+          :data-row="rowIndex"
+          :data-column="colIndex"
+          :key="colIndex">
+          <span v-if="cell.number !== 0">{{cell.number}}</span>
         </td>
       </tr>
     </FibonacciTable>
@@ -93,8 +98,8 @@
         sequenceSize: 5,
         grid: {
           showOptions: true,
-          rows: 25,
-          columns: 25,
+          rows: 20,
+          columns: 20,
           content: []
         },
       }
@@ -192,10 +197,11 @@
           cell.classList.remove('is-hover');
         });
       },
-      addOne(rowIndex, colIndex) {
-        const rows = this.grid.content[rowIndex].columns;
-        const columns = this.grid.content.map(x => x.columns[colIndex]);
+      addOne(cell,rowIndex, colIndex) {
+        const rows = this.allRows[rowIndex];
+        const columns = this.allCols[colIndex];
 
+        cell.number -= 1;
         rows.concat(columns).forEach(cell => {
           cell.number += 1;
           cell.highlight = true;
@@ -221,12 +227,19 @@
             fiboSeq = fiboSeq.reverse();
           }
 
-          const rowPos = getRandomInt(0, (rowSize));
-          const colPos = getRandomInt(0, (colSize) - (this.sequenceSize - 1));
           const startFibo = getRandomInt(0, (fiboSeq.length - 1) - (this.sequenceSize));
           const flipCoin = getRandomInt(0, 2);
 
-          console.log(startFibo);
+          let colPos = 0;
+          let rowPos = 0;
+          if(flipCoin === 0){
+            rowPos = getRandomInt(0, (rowSize));
+            colPos = getRandomInt(0, (colSize) - (this.sequenceSize - 1));
+          }else{
+            rowPos = getRandomInt(0, (colSize) );
+            colPos = getRandomInt(0, (rowSize) - (this.sequenceSize - 1));
+          }
+
           [...Array(this.sequenceSize).keys()].map((n) => {
             if (flipCoin === 0) {
               // row
@@ -239,8 +252,6 @@
             }
           });
         });
-
-
       },
       isFiboSequence(array) {
         let fibo = true;
