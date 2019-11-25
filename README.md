@@ -6,6 +6,7 @@ It's a 50x50 grid with the following rules:
 - After each cell change, the cell will light up yellow briefly.
 - If 5 numbers in a row matches the Fibonacci-sequence, then the cells will light up green briefly. Afterwards, the cells will be empty again.
 
+http://cheuk.online/lab/vue-fibonacci-grid
 
 ## Project setup
 ```

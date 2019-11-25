@@ -230,9 +230,6 @@
             div{
                 margin: 5px;
             }
-            @media screen and (min-width: 641px){
-                display: flex;
-            }
         }
     }
 </style>

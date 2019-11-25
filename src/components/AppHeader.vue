@@ -16,11 +16,11 @@
                 <p>
                     It's a 50x50 grid with the following rules:
                 </p>
-                <p>
-                    - When user clicks on a cell, all horizontal and column cells of the clicked cell will gain 1. If the cell was empty, then it will be 1.
-                    - After each cell change, the cell will light up yellow briefly.
-                    - If 5 numbers in a row matches the Fibonacci-sequence, then the cells will light up green briefly. Afterwards, the cells will be empty again.
-                </p>
+                <ul>
+                    <li>When user clicks on a cell, all horizontal and column cells of the clicked cell will gain 1. If the cell was empty, then it will be 1.</li>
+                    <li>After each cell change, the cell will light up yellow briefly.</li>
+                    <li>If 5 numbers in a row matches the Fibonacci-sequence, then the cells will light up green briefly. Afterwards, the cells will be empty again.</li>
+                </ul>
                 <button @click="isModalActive = !isModalActive">Close</button>
             </div>
             <div class="bg" @click="isModalActive = !isModalActive"></div>
@@ -57,7 +57,7 @@
 <style lang="scss" scoped>
     header{
         @media screen and (min-width: 480px){
-            .inner{
+            & > .inner{
                 display: flex;
                 justify-content: space-around;
                 align-content: center;
@@ -119,6 +119,12 @@
             p{
                 text-align: left;
                 margin-bottom: 10px;
+            }
+            
+            ul{
+                margin: 0;
+                text-align: left;
+                padding-left: 20px;
             }
             
             button{

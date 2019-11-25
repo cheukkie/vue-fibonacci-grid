@@ -22,8 +22,7 @@
 <script>
     import { isSquare } from '@/js/utils';
 	import { createNamespacedHelpers } from 'vuex';
-	const { 
-		mapState: mapGridState, 
+	const {
 		mapGetters: mapGridGetters, 
 		mapActions: mapGridActions, 
 		mapMutations: mapGridMutations 
