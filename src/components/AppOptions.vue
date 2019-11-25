@@ -5,13 +5,13 @@
                 <div>
                     Check sequence in:
                     <select v-model="checkOptions.axis">
-                        <option v-for="(option,index) in getCheckOptions.axis" :value="option.value" :key="index">{{option.label}}</option>
+                        <option v-for="(option,index) in optionsAxis" :value="option.value" :key="index">{{option.label}}</option>
                     </select>
                 </div>
                 <div>
                     Check direction:
                     <select v-model="checkOptions.direction">
-                        <option v-for="(option,index) in getCheckOptions.directions" :value="option.value" :key="index">{{option.label}}</option>
+                        <option v-for="(option,index) in optionsDirection" :value="option.value" :key="index">{{option.label}}</option>
                     </select>
                 </div>
             </div>
@@ -48,7 +48,21 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters, mapMutations } from 'vuex';
+    import { createNamespacedHelpers } from 'vuex';
+    const { 
+        mapGetters: mapGridGetters, 
+        mapActions: mapGridActions, 
+        mapMutations: mapGridMutations 
+    } = createNamespacedHelpers('grid');
+    const { 
+        mapState: mapOptionsState,
+        mapMutations: mapOptionsMutations 
+    } = createNamespacedHelpers('options');
+    const { 
+        mapState: mapFiboState,
+        mapMutations: mapFiboMutations,
+    } = createNamespacedHelpers('fibo');
+
     import { getRandomInt } from '@/js/utils';
     
     export default {
@@ -74,19 +88,37 @@
         mounted: function(){
             this.rowSize = this.getGrid.rows;
             this.columnSize = this.getGrid.columns;
-            this.random.qty = this.getRandomFibo.qty;
-            this.random.size = this.getRandomFibo.size;
+            this.random.qty = this.randomFiboQty;
+            this.random.size = this.randomFiboSize;
         },
         methods:{
-            ...mapActions(['clearGridContent','changeRowSize','changeColSize','addRandomFibo']),
-            ...mapMutations(['CLEAR_GRID','SET_CHECK_AXIS','SET_CHECK_DIRECTION','SET_RANDOM_FIBO_QTY','SET_RANDOM_FIBO_SIZE','SET_CELL_NR']),
+            ...mapGridActions([
+                'clearGridContent',
+                'changeRowSize',
+                'changeColSize',
+                'addRandomFibo',
+            ]),
+            ...mapGridMutations([
+                'CLEAR_GRID',
+                'SET_RANDOM_FIBO_QTY',
+                'SET_RANDOM_FIBO_SIZE',
+                'SET_CELL_NR',
+            ]),
+            ...mapFiboMutations([
+                'SET_RANDOM_FIBO_SIZE',
+                'SET_RANDOM_FIBO_QTY',
+            ]),
+            ...mapOptionsMutations([
+                'SET_CHECK_AXIS',
+                'SET_CHECK_DIRECTION'
+            ]),
 
             addRandomFibo() {
 				let fiboSeq = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765,
 					10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811
 				];
                 
-                [...Array(this.getRandomFibo.qty).keys()].map(() => {
+                [...Array(this.randomFiboQty).keys()].map(() => {
 
                     // get random position in grid
                     const rowSize = this.getGrid.rows;
@@ -96,20 +128,20 @@
                         fiboSeq = fiboSeq.reverse();
                     }
 
-                    const startFibo = getRandomInt(0, (fiboSeq.length - 1) - (this.getRandomFibo.size));
+                    const startFibo = getRandomInt(0, (fiboSeq.length - 1) - (this.randomFiboSize));
                     const flipCoin = getRandomInt(0, 2);
 
                     let colPos = 0;
                     let rowPos = 0;
                     if (flipCoin === 0) {
                         rowPos = getRandomInt(0, (rowSize));
-                        colPos = getRandomInt(0, (colSize) - (this.getRandomFibo.size - 1));
+                        colPos = getRandomInt(0, (colSize) - (this.randomFiboSize - 1));
                     } else {
                         rowPos = getRandomInt(0, (colSize));
-                        colPos = getRandomInt(0, (rowSize) - (this.getRandomFibo.size - 1));
+                        colPos = getRandomInt(0, (rowSize) - (this.randomFiboSize - 1));
                     }
 
-                    [...Array(this.getRandomFibo.size).keys()].map((n) => {
+                    [...Array(this.randomFiboSize).keys()].map((n) => {
                         if (flipCoin === 0) {
                             // row
                             const randomCell = this.getAllRows[rowPos][colPos + n];
@@ -132,7 +164,21 @@
 			},
         },
         computed:{
-            ...mapGetters(['getGrid','getAllRows','getAllColumns','getCheckOptions','getRandomFibo']),
+            ...mapFiboState({
+                randomFiboSize: state => state.randomFiboSize,
+                randomFiboQty: state => state.randomFiboQty,
+            }),
+            ...mapOptionsState({
+                currentAxis: state => state.current_axis,
+                currentDirection: state => state.current_direction,
+                optionsAxis: state => state.options_axis,
+                optionsDirection: state => state.options_direction,
+            }),
+            ...mapGridGetters([
+                'getGrid',
+                'getAllRows',
+                'getAllColumns',
+            ]),
             maxSequenceSize: function () {
 				if (this.getGrid.rows < this.getGrid.columns) {
 					return this.getGrid.rows;

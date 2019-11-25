@@ -1,12 +1,10 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import fibonacci from './modules/fibonacci.store';
+import modules from './modules';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: {
-    fibonacci
-  }
+  modules
 });

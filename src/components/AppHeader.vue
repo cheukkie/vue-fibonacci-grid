@@ -2,7 +2,7 @@
     <header>
         <div class="inner">
             <h1>Fibonacci Grid <span @click="isModalActive = !isModalActive">?</span></h1>
-            <p>Fibonacci's found: <span id="fibo-counter">{{ getFibo.counter }}</span></p>
+            <p>Fibonacci's found: {{ fiboCounter }}</p>
             <button @click="showOptions = !showOptions">
                 <span v-if="!showOptions">Show</span>
                 <span v-else>Hide</span>
@@ -29,7 +29,10 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { createNamespacedHelpers } from 'vuex';
+    const { mapState : mapFiboState } = createNamespacedHelpers('fibo');
+    const { mapGetters : mapGridGetters } = createNamespacedHelpers('grid');
+    
     import AppOptions from '@/components/AppOptions.vue';
 
     export default {
@@ -40,7 +43,10 @@
             }
         },
         computed: {
-            ...mapGetters(['getFibo']),
+            ...mapFiboState({
+                fiboCounter: state => state.counter
+            }),
+            ...mapGridGetters(['getFibo']),
         },
         components:{
             AppOptions

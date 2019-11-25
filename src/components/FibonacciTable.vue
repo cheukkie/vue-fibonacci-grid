@@ -21,7 +21,17 @@
 
 <script>
     import { isSquare } from '@/js/utils';
-    import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
+	import { createNamespacedHelpers } from 'vuex';
+	const { 
+		mapState: mapGridState, 
+		mapGetters: mapGridGetters, 
+		mapActions: mapGridActions, 
+		mapMutations: mapGridMutations 
+	} = createNamespacedHelpers('grid');
+
+	const { mapState: mapOptionsState } = createNamespacedHelpers('options');
+	const { mapMutations: mapFiboMutations } = createNamespacedHelpers('fibo');
+
     export default {
         props: {
             data: [Object, Array]
@@ -29,8 +39,19 @@
         mounted:function(){
         },
         methods:{
-            ...mapActions(['rowIncrement','columnIncrement']),
-            ...mapMutations(['SET_CELL_NR','RESET_HIGHLIGHTS','INCREMENT_FIBO_COUNTER','SET_CELL_FIBO','RESET_CELL']),
+            ...mapGridActions([
+				'rowIncrement',
+				'columnIncrement'
+			]),
+            ...mapGridMutations([
+				'SET_CELL_NR',
+				'RESET_HIGHLIGHTS',
+				'SET_CELL_FIBO',
+				'RESET_CELL'
+			]),
+			...mapFiboMutations([
+				'INCREMENT_FIBO_COUNTER',
+			]),
             highlightRowCol(rowIndex, colIndex) {
 				const rows = this.$el.querySelectorAll(`td[data-row="${rowIndex}"]`);
 				const cols = this.$el.querySelectorAll(`td[data-column="${colIndex}"]`);
@@ -73,7 +94,7 @@
 				setTimeout(() => {
                     this.RESET_HIGHLIGHTS();
 				}, 500);
-				this.setArrayOptions(this.getCheckOptions.current_axis, this.getCheckOptions.current_direction);
+				this.setArrayOptions(this.currentAxis, this.currentDirection);
             },
             setArrayOptions(axis = 'all', direction = 'regular') {
 				if (axis === 'row') {
@@ -154,7 +175,14 @@
 			}
         },
         computed: {
-            ...mapGetters(['getCheckOptions','getAllRows','getAllColumns']),
+            ...mapGridGetters([
+				'getAllRows',
+				'getAllColumns'
+			]),
+			...mapOptionsState({
+				currentAxis: state => state.current_axis,
+				currentDirection: state => state.current_direction
+			})
         }
     }
 </script>

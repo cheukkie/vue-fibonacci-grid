@@ -7,7 +7,12 @@
 </template>
 
 <script>
-	import { mapGetters, mapActions } from 'vuex';
+	
+	import { createNamespacedHelpers } from 'vuex';
+	const { 
+		mapGetters: mapGridGetters, 
+		mapActions: mapGridActions
+	} = createNamespacedHelpers('grid');
 
 	// TO DO: FIGURE OUT MAPSTATE HELPER + NAMESPACED STORE
 
@@ -25,10 +30,10 @@
 			this.setupGrid();
 		},
 		methods: {
-			...mapActions(['setupGrid']),
+			...mapGridActions(['setupGrid']),
 		},
 		computed: {
-			...mapGetters(['getGrid']),
+			...mapGridGetters(['getGrid']),
 		},
 		components: {
 			AppHeader,

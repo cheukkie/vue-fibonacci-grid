@@ -1,56 +1,14 @@
 import uniqid from 'uniqid';
 
 const state = {
-    fibo: {
-        counter: 0
-    },
-    checkOptions: {
-        current_axis: 'all',
-        axis: [{
-                label: 'Rows & columns',
-                value: 'all',
-            },
-            {
-                label: 'Rows',
-                value: 'row',
-            },
-            {
-                label: 'Columns',
-                value: 'column',
-            }
-        ],
-        current_direction: 'both',
-        directions: [{
-                label: 'Both',
-                value: 'both',
-            },
-            {
-                label: 'Regular',
-                value: 'regular',
-            },
-            {
-                label: 'Reversed',
-                value: 'reversed',
-            }
-        ],
-    },
-    randomFibo:{
-        size: 5,
-        qty: 1
-    },
     grid: {
         rows: 12,
         columns: 23,
         content: []
     },
-
 };
 
 const getters = {
-    getFibo: state => state.fibo,
-    getRandomFibo: state => state.randomFibo,
-    getCheckOptions: state => state.checkOptions,
-
     getGrid: state => state.grid,
 
     getAllRows: state => state.grid.content.map(row => row),
@@ -111,17 +69,6 @@ const actions = {
 };
 
 const mutations = {
-    // FIBO COUNTER
-    INCREMENT_FIBO_COUNTER : state => state.fibo.counter += 1,
-    
-    // RANDOM FIBO OPTIONS
-    SET_RANDOM_FIBO_SIZE: (state,size) => state.randomFibo.size = size,
-    SET_RANDOM_FIBO_QTY: (state,qty) => state.randomFibo.qty = qty,
-
-    // CHECK OPTIONS
-    SET_CHECK_AXIS : (state,axis) => state.checkOptions.current_axis = axis,
-    SET_CHECK_DIRECTION : (state,direction) => state.checkOptions.current_direction = direction,
-
     // ROW & COLUMNS
     SET_ROWS : (state,qty) => state.grid.rows = qty,
     SET_COLUMNS : (state,qty) => state.grid.columns = qty,
@@ -223,11 +170,10 @@ const mutations = {
         const highlightCells = state.grid.content.flat().filter(cell => cell.highlight === true);
         highlightCells.forEach(cell => cell.highlight = false);
     },
-
 };
 
 export default {
-    // namespaced: true,
+    namespaced: true,
     state,
     getters,
     actions,
