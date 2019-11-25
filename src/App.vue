@@ -14,8 +14,6 @@
 		mapActions: mapGridActions
 	} = createNamespacedHelpers('grid');
 
-	// TO DO: FIGURE OUT MAPSTATE HELPER + NAMESPACED STORE
-
 	import AppHeader from '@/components/AppHeader.vue';
 	import AppFooter from '@/components/AppFooter.vue';
 	import FibonacciTable from '@/components/FibonacciTable.vue';
