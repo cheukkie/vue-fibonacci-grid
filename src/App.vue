@@ -1,90 +1,17 @@
 <template>
 	<div id="app">
 		<AppHeader />
-		<header>
-			<h1>Fibonacci Grid (?)</h1>
-			<p>Fibonacci's found: {{fiboCounter}}</p>
-		</header>
-		<AppOptions />
-		<button @click="grid.showOptions = !grid.showOptions">
-			<span v-if="!grid.showOptions">Show</span>
-			<span v-else>Hide</span>
-			options
-		</button>
-		<div v-if="grid.showOptions" id="options">
-			<div>
-				<button @click="clearGrid">Clear grid</button>
-			</div>
-			<div>
-				<div>
-					Check sequence in:
-					<select id="check-axis" v-model="checkOptions.axis">
-						<option value="row">Rows</option>
-						<option value="column">Columns</option>
-						<option selected value="all">Rows & columns</option>
-					</select>
-				</div>
-				<div>
-					Check direction:
-					<select id="check-direction" v-model="checkOptions.direction">
-						<option value="regular">Regular</option>
-						<option value="reversed">Reversed</option>
-						<option selected value="both">Both directions</option>
-					</select>
-				</div>
-			</div>
-			<div>
-				<div id="sequence-size">
-					<label>Sequence size: ( {{ sequenceSize }} )</label>
-					<input v-model.number="sequenceSize" type="range" steps="1" value="5" min="5"
-						:max="maxSequenceSize">
-				</div>
-				<button @click="addRandomFibo(sequenceSize)">Add random Fibo</button>
-			</div>
-			<div>
-				<div>
-					<div id="row-counter">
-						<label>Rows: ({{ grid.rows }})</label>
-						<input v-model.number="grid.rows" @change="handleRowChange" type="range" steps="1" value="50"
-							min="10" max="50">
-					</div>
-					<div id="col-counter">
-						<label>Columns ({{ grid.columns }})</label>
-						<input v-model.number="grid.columns" @change="handleColChange" type="range" steps="1" value="50"
-							min="10" max="50">
-					</div>
-				</div>
-			</div>
-		</div>
-		<br>
-
-		<FibonacciTable>
-			<tr v-for="(row,rowIndex) in grid.content" :key="rowIndex">
-				<td v-for="(cell,colIndex) in row" 
-					@click="addOne(cell,rowIndex,colIndex)"
-					@mouseenter="highlightRowCol(rowIndex,colIndex)" 
-					@mouseleave="resetHightRowCol"
-					:class="{ 'is-fibo': cell.fibo, 'is-clicked' : cell.highlight, 'is-empty': cell.number === 0 }"
-					:data-row="rowIndex" 
-					:data-column="colIndex" 
-					:key="colIndex">
-					<span v-if="cell.number !== 0">{{cell.number}}</span>
-				</td>
-			</tr>
-		</FibonacciTable>
-
+		<FibonacciTable :data="getGrid.content" />
 		<AppFooter />
 	</div>
 </template>
 
 <script>
-	import {
-		getRandomInt,
-		isSquare,
-	} from '@/js/utils';
+	import { mapGetters, mapActions } from 'vuex';
+
+	// TO DO: FIGURE OUT MAPSTATE HELPER + NAMESPACED STORE
 
 	import AppHeader from '@/components/AppHeader.vue';
-	import AppOptions from '@/components/AppOptions.vue';
 	import AppFooter from '@/components/AppFooter.vue';
 	import FibonacciTable from '@/components/FibonacciTable.vue';
 
@@ -92,294 +19,26 @@
 		name: 'app',
 		data: function () {
 			return {
-				fiboCounter: 0,
-				checkOptions: {
-					axis: 'all',
-					direction: 'both',
-				},
-				sequenceSize: 5,
-				grid: {
-					showOptions: true,
-					rows: 20,
-					columns: 20,
-					content: []
-				},
 			}
 		},
 		mounted: function () {
 			this.setupGrid();
 		},
 		methods: {
-			setupGrid() {
-				[...Array(this.grid.rows).keys()].map(() => {
-					let columnArr = [];
-					for (let a = 0; a < this.grid.columns; a++) {
-						columnArr.push({
-							highlight: false,
-							number: 0,
-							fibo: false,
-						});
-					}
-					this.grid.content.push(
-						columnArr
-					);
-				});
-			},
-			clearGrid() {
-				this.allCells.forEach(cell => this.resetCell(cell));
-			},
-			handleRowChange() {
-				let diff = this.grid.content.length - this.grid.rows;
-				if (diff > 0) {
-					// remove rows
-					this.grid.content.splice(diff * -1, diff);
-				} else {
-					//add rows
-					diff = Math.abs(diff);
-					[...Array(diff).keys()].map(() => {
-						const row = [];
-						for (let i = 0; i < this.grid.columns; i++) {
-							row.push({
-								highlight: false,
-								number: 0,
-								fibo: false,
-							});
-						}
-						this.grid.content.push(row);
-					});
-				}
-			},
-			handleColChange() {
-				let diff = this.grid.content[0].length - this.grid.columns;
-				if (diff > 0) {
-					// remove cols
-					this.grid.content.forEach(row => {
-						row.splice(diff * -1, diff);
-					});
-				} else {
-					// add cols
-					diff = Math.abs(diff);
-					for (let i = 0; i < diff; i++) {
-						this.grid.content.forEach(row => {
-							row.push({
-								highlight: false,
-								number: 0,
-								fibo: false,
-							})
-						});
-					}
-				}
-			},
-			resetCell(cell) {
-				cell.highlight = false;
-				cell.number = 0;
-				cell.fibo = false;
-			},
-			makeCellFibo(cell) {
-				cell.fibo = true;
-				setTimeout(() => {
-					this.resetCell(cell);
-				}, 1000);
-			},
-			highlightRowCol(rowIndex, colIndex) {
-				const rows = this.$el.querySelectorAll(`td[data-row="${rowIndex}"]`);
-				const cols = this.$el.querySelectorAll(`td[data-column="${colIndex}"]`);
-				rows.forEach(row => {
-					row.classList.add('is-hover');
-				});
-				cols.forEach(col => {
-					col.classList.add('is-hover');
-				});
-			},
-			resetHightRowCol() {
-				const cells = this.$el.querySelectorAll(`td`);
-				cells.forEach(cell => {
-					cell.classList.remove('is-hover');
-				});
-			},
-			addOne(cell, rowIndex, colIndex) {
-				const rows = this.allRows[rowIndex];
-				const columns = this.allCols[colIndex];
-
-				cell.number -= 1;
-				rows.concat(columns).forEach(cell => {
-					cell.number += 1;
-					cell.highlight = true;
-				});
-
-				setTimeout(() => {
-					this.allCells.forEach(cell => {
-						cell.highlight = false;
-					});
-				}, 500);
-
-				this.setArrayOptions(this.checkOptions.axis, this.checkOptions.direction);
-			},
-			addRandomFibo(iterations = 1) {
-				let fiboSeq = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765,
-					10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811
-				];
-				[...Array(iterations).keys()].map(() => {
-					// get random position in grid
-					const rowSize = this.grid.rows;
-					const colSize = this.grid.columns;
-
-					if (getRandomInt(0, 2) !== 0) {
-						fiboSeq = fiboSeq.reverse();
-					}
-
-					const startFibo = getRandomInt(0, (fiboSeq.length - 1) - (this.sequenceSize));
-					const flipCoin = getRandomInt(0, 2);
-
-					let colPos = 0;
-					let rowPos = 0;
-					if (flipCoin === 0) {
-						rowPos = getRandomInt(0, (rowSize));
-						colPos = getRandomInt(0, (colSize) - (this.sequenceSize - 1));
-					} else {
-						rowPos = getRandomInt(0, (colSize));
-						colPos = getRandomInt(0, (rowSize) - (this.sequenceSize - 1));
-					}
-
-					[...Array(this.sequenceSize).keys()].map((n) => {
-						if (flipCoin === 0) {
-							// row
-							const randomCell = this.allRows[rowPos][colPos + n];
-							randomCell.number = fiboSeq[startFibo + n];
-						} else {
-							// column
-							const randomCell = this.allCols[rowPos][colPos + n];
-							randomCell.number = fiboSeq[startFibo + n];
-						}
-					});
-				});
-			},
-			isFiboSequence(array) {
-				let fibo = true;
-				array.forEach((value, i, arr) => {
-					if (i < arr.length - 2) {
-						if (arr[i] + arr[i + 1] !== arr[i + 2]) {
-							// console.log(i);
-							fibo = false;
-						} else {
-							// console.log(`${arr[i]} + ${arr[i + 1]} = ${arr[i + 2]}`);
-						}
-					}
-				});
-				return fibo;
-			},
-			isFibo(value) {
-				return isSquare(5 * (value * value) - 4) || isSquare(5 * (value * value) + 4);
-			},
-			setArrayOptions(axis = 'all', direction = 'regular') {
-				if (axis === 'row') {
-					if (direction === 'regular') {
-						this.checkArray(this.allRows, 'regular');
-					}
-					if (direction === 'reversed') {
-						this.checkArray(this.allRows, 'reversed');
-					}
-					if (direction === 'both') {
-						this.checkArray(this.allRows, 'regular');
-						this.checkArray(this.allRows, 'reversed');
-					}
-				}
-
-				if (axis === 'column') {
-					if (direction === 'regular') {
-						this.checkArray(this.allCols, 'regular');
-					}
-					if (direction === 'reversed') {
-						this.checkArray(this.allCols, 'reversed');
-					}
-					if (direction === 'both') {
-						this.checkArray(this.allCols, 'regular');
-						this.checkArray(this.allCols, 'reversed');
-					}
-				}
-
-				if (axis === 'all') {
-					if (direction === 'regular') {
-						this.checkArray(this.allRows, 'regular');
-						this.checkArray(this.allCols, 'regular');
-					}
-
-					if (direction === 'reversed') {
-						this.checkArray(this.allRows, 'reversed');
-						this.checkArray(this.allCols, 'reversed');
-					}
-
-					if (direction === 'both') {
-						this.checkArray(this.allRows, 'regular');
-						this.checkArray(this.allCols, 'regular');
-						this.checkArray(this.allRows, 'reversed');
-						this.checkArray(this.allCols, 'reversed');
-					}
-				}
-			},
-			checkArray(array, direction) {
-				array.forEach(row => {
-					row.forEach((currentCell, index, arr) => {
-						if (
-							this.isFibo(currentCell.number) &&
-							currentCell.number > 1 // only check if fib nr is above 1
-							&&
-							index >= 2 // dont check row/col pos -2
-							&&
-							index < arr.length - 2 // row/col length +2
-						) {
-							let slice = [...Array(5).keys()].map((n) => {
-								return arr[index + (n - 2)];
-							});
-							if (direction === 'reversed') {
-								slice = slice.reverse();
-							}
-							const sequence = slice.map(x => x.number);
-							if (this.isFiboSequence(sequence)) {
-								slice.forEach(cell => this.makeCellFibo(cell))
-								this.fiboCounter += 1;
-							}
-						}
-					});
-				});
-			}
+			...mapActions(['setupGrid']),
 		},
 		computed: {
-			allCells: function () {
-				return this.grid.content.map(row => row).flat();
-			},
-			allRows: function () {
-				return this.grid.content.map(row => row);
-			},
-			allCols: function () {
-				const allColumns = [];
-				for (let colIndex = 0; colIndex < this.grid.columns; colIndex += 1) {
-					const column = [];
-					[...Array(this.grid.rows).keys()].map((rowIndex) => {
-						column.push(this.grid.content[rowIndex][colIndex]);
-					});
-					allColumns.push(column);
-				}
-				return allColumns;
-			},
-			maxSequenceSize: function () {
-				if (this.grid.rows < this.grid.columns) {
-					return this.grid.rows;
-				} else {
-					return this.grid.columns;
-				}
-			},
+			...mapGetters(['getGrid']),
 		},
 		components: {
 			AppHeader,
-			AppOptions,
 			FibonacciTable,
 			AppFooter,
 		}
 	}
 </script>
 
-<style>
+<style lang="scss">
 	@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,400i&display=swap');
 
 	html {
@@ -411,5 +70,21 @@
 		padding: 15px;
 
 		font-size: 14px;
+	}
+	button{
+		display: inline-block;
+		-webkit-appearance: none;
+		border: none;
+		background-color: #000000;
+		padding: 5px 10px;
+		border: solid 1px #ffffff;
+		color: #ffffff;
+		cursor: pointer;
+		
+		&:hover{
+			color: #000000;
+			background-color: #ffffff;
+			border-color: #000000;
+		}
 	}
 </style>

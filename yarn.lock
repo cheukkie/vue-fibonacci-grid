@@ -2388,6 +2388,11 @@ core-js@^3.3.2:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.4.1.tgz#76dd6828412900ab27c8ce0b22e6114d7ce21b18"
   integrity sha512-KX/dnuY/J8FtEwbnrzmAjUYgLqtk+cxM86hfG60LGiW3MmltIc2yAmDgBgEkfm0blZhUrdr1Zd84J2Y14mLxzg==
 
+core-js@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.4.2.tgz#ee2b1a60b50388d8ddcda8cdb44a92c7a9ea76df"
+  integrity sha512-bUTfqFWtNKWp73oNIfRkqwYZJeNT3lstzZcAkhhiuvDraRSgOH1/+F9ZklbpR4zpdKuo4cpXN8tKP7s61yjX+g==
+
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
@@ -8120,6 +8125,11 @@ uniq@^1.0.1:
   resolved "https://registry.yarnpkg.com/uniq/-/uniq-1.0.1.tgz#b31c5ae8254844a3a8281541ce2b04b865a734ff"
   integrity sha1-sxxa6CVIRKOoKBVBzisEuGWnNP8=
 
+uniqid@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/uniqid/-/uniqid-5.1.0.tgz#47e4f7567f12409fa7664f80abdfb1730fc021c3"
+  integrity sha512-iBt38h8uFnbDFrRK4E7vdzjtynBii5aSwGZ27gle7xnbYSIZzJ5x5BqughgUvMNCZ1cMhtnpcF+w7XGbqm6d9Q==
+
 uniqs@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/uniqs/-/uniqs-2.0.0.tgz#ffede4b36b25290696e6e165d4a59edb998e6b02"
@@ -8342,7 +8352,7 @@ vue@^2.6.10:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
   integrity sha512-ImThpeNU9HbdZL3utgMCq0oiMzAkt1mcgy3/E6zWC/G6AaQoeuFdsl9nDhTDU3X1R6FK7nsIUuRACVcjI+A2GQ==
 
-vuex@^3.0.1:
+vuex@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.2.tgz#a2863f4005aa73f2587e55c3fadf3f01f69c7d4d"
   integrity sha512-ha3jNLJqNhhrAemDXcmMJMKf1Zu4sybMPr9KxJIuOpVcsDQlTBYLLladav2U+g1AvdYDG5Gs0xBTb0M5pXXYFQ==
