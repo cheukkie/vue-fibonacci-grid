@@ -9,7 +9,9 @@ const getters = {
 };
 
 const actions = {
-    
+    // initStore({commit}){
+    //     console.log('init store fibo');
+    // },
 };
 
 const mutations = {    

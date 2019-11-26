@@ -27,6 +27,10 @@ const getters = {
 };
 
 const actions = {
+    // initStore({commit}){
+    //     console.log('init store grid');
+    // },
+
     setupGrid({commit}){
         commit('SETUP_GRID');
     },

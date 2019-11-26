@@ -35,7 +35,9 @@ const getters = {
 };
 
 const actions = {
-    
+    // initStore({commit}){
+    //     console.log('init store options');
+    // },
 };
 
 const mutations = {    
