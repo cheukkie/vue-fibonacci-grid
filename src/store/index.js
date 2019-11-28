@@ -13,7 +13,7 @@ const store = new Vuex.Store({
 
 // Check if initStore exists in all modules,
 // if so, dispatch it
-Object.keys(modules).forEach(moduleName => {
+Object.keys(modules).forEach((moduleName) => {
   if (modules[moduleName].actions && modules[moduleName].actions.initStore) {
     store.dispatch(`${moduleName}/initStore`);
   }
